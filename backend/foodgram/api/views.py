@@ -4,13 +4,14 @@ from .serializers import RecipeSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from recipes.models import Recipe, Tag
+from .permissions import IsAdminOrReadOnly
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """
     Endpoint для получения, создания, изменения, удаления рецептов.
     """
     queryset = Recipe.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
     serializer_class = RecipeSerializer
 
     def perform_create(self, serializer):
