@@ -1,3 +1,4 @@
+from colorfield.fields import ColorField
 from django.core.validators import MinValueValidator
 from django.db import models
 from users.models import User
@@ -5,19 +6,31 @@ from users.models import User
 
 class Tag(models.Model):
     """Модель тегов."""
-    name = models.CharField(max_length=256, verbose_name='Название')
-    color = models.CharField(max_length=16)
-    slug = models.SlugField(
-        max_length=50, unique=True, verbose_name='Ключ'
+    name = models.CharField(
+        max_length=30,
+        unique=True,
+        verbose_name='Название'
     )
+    color = ColorField(
+        unique=True,
+        max_length=7,
+        verbose_name='Цвет в HEX',
+        blank = True,
+        null = True,
+        default = '#FFFFE0'
+    )
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+        verbose_name='Уникальный ключ')
 
     class Meta:
         ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
-    def __str__(self) -> str:
-        return self.name
+    def __str__(self):
+        return self.slug
 
 
 class Ingredient(models.Model):
@@ -38,9 +51,9 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Модель рецептов."""
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='recipes', verbose_name="Рецепты")
-    name = models.CharField(max_length=200, unique=True)
-    image = models.ImageField(upload_to='recipes/', null=True, blank=True)
+        User, on_delete=models.CASCADE, related_name='recipes', verbose_name='Автор')
+    name = models.CharField(max_length=200, unique=True, verbose_name='Название')
+    image = models.ImageField(upload_to='recipes/', null=True, blank=True, verbose_name='Изображение')
     text = models.TextField(
         null=True,
         blank=True,
@@ -48,7 +61,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField('Tag', blank=True, related_name='recipes', verbose_name='Теги')
     ingredients = models.ManyToManyField('Ingredient', related_name='recipes', verbose_name='Ингредиенты')
-    cooking_time = models.IntegerField()
+    cooking_time = models.IntegerField(verbose_name='Время приготовления')
 
     class Meta:
         ordering = ['author']
