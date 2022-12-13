@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models import Q, F
 
 from foodgram.settings import NAME_MAX_LENGTH, EMAIL_MAX_LENGTH
+
+FOLLOW_STR = '{user} подписан на {author}'
 
 class User(AbstractUser):
     """Модель пользователя."""
@@ -31,6 +34,11 @@ class User(AbstractUser):
         verbose_name='Роль'
     )
 
+    class Meta:
+        ordering = ['username']
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
     @property
     def is_admin(self):
         return (
@@ -38,7 +46,33 @@ class User(AbstractUser):
             or self.is_staff
         )
 
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='follower', verbose_name='Подписчик')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор'
+    )
+
     class Meta:
-        ordering = ['username']
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='уникальная подписка'
+            ),
+            models.CheckConstraint(
+                check=Q(user=F('user')),
+                name='подписка на самого себя'
+            )
+        ]
+
+    def __str__(self):
+        return FOLLOW_STR.format(
+            user=self.user.username,
+            author=self.author.username
+        )

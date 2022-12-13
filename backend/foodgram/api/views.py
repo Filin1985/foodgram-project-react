@@ -1,17 +1,17 @@
 from django.shortcuts import render
 from rest_framework import viewsets, mixins, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from .serializers import RecipeSerializer, TagSerializer
+from .serializers import RecipeSerializer, TagSerializer, IngredientSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from recipes.models import Recipe, Tag
+from recipes.models import Recipe, Tag, Ingredient
 from .permissions import IsAdminOrReadOnly
 from .pagination import MyPageNumberPagination
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Endpoint для получения, создания, изменения, удаления тэгов.
+    Endpoint для получения списка тэгов и тэга по id.
     """
     queryset = Tag.objects.all()
     permission_classes = (AllowAny,)
@@ -19,6 +19,19 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_paginated_response(self, data):
        return Response(data)
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Endpoint для получения списка ингредиентов и ингредиента по id.
+    """
+    queryset = Ingredient.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = IngredientSerializer
+
+    def get_paginated_response(self, data):
+       return Response(data)
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """
