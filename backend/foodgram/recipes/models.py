@@ -60,8 +60,9 @@ class Recipe(models.Model):
         verbose_name='Описание рецепта'
     )
     tags = models.ManyToManyField('Tag', blank=True, related_name='recipes', verbose_name='Теги')
-    ingredients = models.ManyToManyField('Ingredient', related_name='recipes', verbose_name='Ингредиенты')
+    ingredients = models.ManyToManyField('Ingredient', through='IngredientQuantity', related_name='recipes', verbose_name='Ингредиенты')
     cooking_time = models.IntegerField(verbose_name='Время приготовления')
+
 
     class Meta:
         ordering = ['author']
@@ -75,7 +76,7 @@ class IngredientQuantity(models.Model):
     """Модель описывающая количество ингредиента."""
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='quantity', verbose_name="Рецепт")
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='quantity', verbose_name='Ингредиент')
-    quantity = models.PositiveSmallIntegerField(validators=(MinValueValidator(1, 'Количество ингредиента не можем быть меньше 1'),))
+    amount = models.PositiveSmallIntegerField(validators=(MinValueValidator(1, 'Количество ингредиента не можем быть меньше 1'),))
 
     class Meta:
         verbose_name = 'Количество ингредиента'
