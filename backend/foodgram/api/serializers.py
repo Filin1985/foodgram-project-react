@@ -6,7 +6,7 @@ from rest_framework.serializers import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.serializers import MyUserSerializer
-from recipes.models import User, Recipe, Tag, Ingredient, IngredientQuantity, FavoritesList, CartList
+from recipes.models import User, Recipe, Tag, Ingredient, IngredientQuantity, Favorite, CartList
 
 
 class Hex2NameColor(serializers.Field):
@@ -35,25 +35,25 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
-        read_only_fields = '__all__',
 
 class IngredientQuantitySerializer(serializers.ModelSerializer):
     """Сериализатор для модели IngredientQuantity."""
-    id = serializers.ReadOnlyField(source='ingredient.id')
+    id = serializers.PrimaryKeyRelatedField(source='ingredient', read_only=True)
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientQuantity
-        fields = '__all__'
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 class AddIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(source='ingredient', queryset=Ingredient.objects.all())
+    recipe = serializers.PrimaryKeyRelatedField(read_only=True)
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
 
     class Meta:
-        model = Ingredient
-        fields = ('id', 'amount')
+        model = IngredientQuantity
+        fields = ('id', 'amount', 'recipe')
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
@@ -75,7 +75,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return FavoritesList.objects.filter(recipe=obj, user=request.user).exists()
+        return Favorite.objects.filter(recipe=obj, user=request.user).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
@@ -90,7 +90,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
     ingredients = AddIngredientSerializer(many=True)
     author = MyUserSerializer(read_only=True)
-    image = Base64ImageField()
+    image = Base64ImageField(use_url=True, max_length=None)
     
 
     class Meta:
@@ -98,6 +98,39 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'tags', 'image', 'author', 'ingredients', 'name', 'text', 'cooking_time')
 
     def validate(self, data):
+        # ingredients = data['ingredients']
+        # ingredients_list = []
+        # for ingredient in ingredients:
+        #     ingredient_id = ingredient['id']
+        #     if ingredient_id in ingredients_list:
+        #         raise serializers.ValidationError({
+        #             'ingredients': 'Ингредиенты должны быть уникальными!'
+        #         })
+        #     ingredients_list.append(ingredient_id)
+        #     amount = ingredient['amount']
+        #     if int(amount) <= 0:
+        #         raise serializers.ValidationError({
+        #             'amount': 'Количество ингредиента должно быть больше нуля!'
+        #         })
+
+        # tags = data['tags']
+        # if not tags:
+        #     raise serializers.ValidationError({
+        #         'tags': 'Нужно выбрать хотя бы один тэг!'
+        #     })
+        # tags_list = []
+        # for tag in tags:
+        #     if tag in tags_list:
+        #         raise serializers.ValidationError({
+        #             'tags': 'Тэги должны быть уникальными!'
+        #         })
+        #     tags_list.append(tag)
+
+        # cooking_time = data['cooking_time']
+        # if int(cooking_time) <= 0:
+        #     raise serializers.ValidationError({
+        #         'cooking_time': 'Время приготовления должно быть больше 0!'
+        #     })
         return data
 
     def create_ingredients(self, ingredients, recipe):
@@ -116,32 +149,23 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_ingredients(ingredients, recipe)
         return recipe
 
-    
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        amount = IngredientQuantity.objects.filter(recipe__id=instance.id)
+        amount.delete()
+        instance.tags.set(tags)
+        self.create_ingredients(ingredients, instance)
+        return super().update(instance, validated_data)
 
-class FavoritesListSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели FavoritesList."""
-    user = serializers.SlugRelatedField(
-        slug_field='username',
-        read_only=True,
-        default=serializers.CurrentUserDefault(),
-    )
-    following = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
-        slug_field='username'
-    )
-
-    class Meta:
-        model = FavoritesList
-        fields = '__all__'
-        extra_kwargs = {'following': {'required': True}}
-        validators = [
-            UniqueTogetherValidator(
-                queryset=FavoritesList.objects.all(),
-                fields=['user', 'following']
-            )
-        ]
-
-    def validate_following(self, value):
-        if self.context['request'].user == value:
-            raise ValidationError("Автор не может подписаться на самого себя")
-        return value
+    def to_representation(self, instance):
+        self.fields.pop('tags')
+        self.fields.pop('ingredients')
+        representation = super().to_representation(instance)
+        representation['ingredients'] = IngredientQuantitySerializer(
+            IngredientQuantity.objects.filter(recipe=instance), many=True
+        ).data
+        representation['tags'] = TagSerializer(
+            instance.tags, many=True
+        ).data
+        return representation

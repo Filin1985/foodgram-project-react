@@ -74,15 +74,15 @@ class Recipe(models.Model):
 
 class IngredientQuantity(models.Model):
     """Модель описывающая количество ингредиента."""
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='quantity', verbose_name="Рецепт")
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='quantity', verbose_name='Ингредиент')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='amount', verbose_name="Рецепт")
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='amount', verbose_name='Ингредиент')
     amount = models.PositiveSmallIntegerField(validators=(MinValueValidator(1, 'Количество ингредиента не можем быть меньше 1'),))
 
     class Meta:
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
         
-class FavoritesList(models.Model):
+class Favorite(models.Model):
     """Модель для списка избранных рецептов."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='favorites')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Избранный рецепт", related_name='favorites')
@@ -105,5 +105,5 @@ class CartList(models.Model):
         verbose_name_plural = 'Список покупок'
         constraints = [
             models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique favorite recipe')
+                                    name='unique cart recipe')
         ]
