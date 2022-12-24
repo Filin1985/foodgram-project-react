@@ -1,10 +1,12 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models import Q, F
+from django.db import models
+from django.db.models import F, Q
+from foodgram.settings import EMAIL_MAX_LENGTH, NAME_MAX_LENGTH
 
-from foodgram.settings import NAME_MAX_LENGTH, EMAIL_MAX_LENGTH
+from .validators import check_username
 
 FOLLOW_STR = '{user} подписан на {author}'
+
 
 class User(AbstractUser):
     """Модель пользователя."""
@@ -16,6 +18,7 @@ class User(AbstractUser):
     ]
 
     username = models.CharField(
+        validators=[check_username],
         max_length=NAME_MAX_LENGTH,
         unique=True,
         verbose_name='Имя пользователя'
