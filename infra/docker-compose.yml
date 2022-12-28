@@ -12,7 +12,7 @@ services:
       - '5432:5432'
 
   backend:
-    image: nickolaeo/foodgram:v.1.0
+    image: ihsmen/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/backend_static/
