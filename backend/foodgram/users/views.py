@@ -44,10 +44,10 @@ class CustomUserViewSet(UserViewSet):
         Follow.objects.filter(user=request.user, author=author).exists()
         follower = get_object_or_404(Follow, user=request.user, author=author)
         follower.delete()
-        return Response({
-                    f'Вы больше не подписаны на {author}'},
-                    status=status.HTTP_204_NO_CONTENT
-                )
+        return Response(
+            {f'Вы больше не подписаны на {author}'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         methods=['GET'],
