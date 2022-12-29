@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 
 services:
   db:
@@ -41,7 +41,6 @@ services:
       - media_value:/var/html/backend_media/
     depends_on:
       - backend
-      - frontend
 
 volumes:
   postgres_data:
