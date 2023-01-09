@@ -73,10 +73,7 @@ class RecipeViewSet(ModelViewSet):
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
         page = canvas.Canvas(response)
-
-        page.setFont(size=24)
         page.drawString(140, 800, 'Список необходимых покупок')
-        page.setFont(size=14)
         height = 750
         ingredients = IngredientQuantity.objects.filter(
             recipe__cart__user=request.user).values(
