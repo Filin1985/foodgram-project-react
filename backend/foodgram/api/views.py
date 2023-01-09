@@ -85,7 +85,7 @@ class RecipeViewSet(ModelViewSet):
             i_unit = ingredient["ingredient__measurement_unit"]
             data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
         return Response(
-            print('\n'.join(data)),
+            print('\r\n'.join(data)),
             status=status.HTTP_200_OK,
             content_type='text/plain')
 
