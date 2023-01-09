@@ -67,9 +67,9 @@ class RecipeViewSet(ModelViewSet):
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        # response = HttpResponse(content_type='application/pdf')
-        # response['Content-Disposition'] = ('attachment; '
-        #                                    'filename="список_покупок.pdf"')
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = ('attachment; '
+        #                                    'filename="shopping_list.pdf"')
         # page = canvas.Canvas(response)
         # pdfmetrics.registerFont(
         #     TTFont('Roboto', '../../data/roboto.ttf', 'UTF-8'))
