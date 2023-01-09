@@ -67,16 +67,16 @@ class RecipeViewSet(ModelViewSet):
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        pdfmetrics.registerFont(
-            TTFont('Roboto', './roboto.ttf', 'UTF-8'))
+        # pdfmetrics.registerFont(
+        #     TTFont('Roboto', './roboto.ttf', 'UTF-8'))
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
         page = canvas.Canvas(response)
 
-        page.setFont('Roboto', size=24)
+        page.setFont(size=24)
         page.drawString(140, 800, 'Список необходимых покупок')
-        page.setFont('Roboto', size=14)
+        page.setFont(size=14)
         height = 750
         ingredients = IngredientQuantity.objects.filter(
             recipe__cart__user=request.user).values(
