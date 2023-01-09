@@ -1,8 +1,11 @@
 from django.db.models import Sum
+from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import status
-from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -53,7 +56,7 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthOrReadOnly,)
     pagination_class = CustomPageNumberPagination
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     filter_class = CustomRecipeFilter
 
     def get_serializer_class(self):
@@ -81,9 +84,8 @@ class RecipeViewSet(ModelViewSet):
             i_name = ingredient["ingredient__name"]
             i_unit = ingredient["ingredient__measurement_unit"]
             data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
-        result = '\n'.join(data)
         return Response(
-            result,
+            '\n'.join(data),
             status=status.HTTP_200_OK,
             content_type='text/plain'
         )
