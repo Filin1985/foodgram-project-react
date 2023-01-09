@@ -67,15 +67,15 @@ class RecipeViewSet(ModelViewSet):
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        # response = HttpResponse(content_type='application/pdf')
-        # response['Content-Disposition'] = ('attachment; '
-        #                                    'filename="список_покупок.pdf"')
-        # page = canvas.Canvas(response)
-        # pdfmetrics.registerFont(
-        #     TTFont('Roboto', '../../data/roboto.ttf', 'UTF-8'))
-        # page.setFont('Roboto', size=24)
-        # page.drawString(140, 800, 'Список необходимых покупок')
-        # page.setFont('Roboto', size=14)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = ('attachment; '
+                                           'filename="список_покупок.pdf"')
+        page = canvas.Canvas(response)
+        pdfmetrics.registerFont(
+            TTFont('Roboto', '../../data/roboto.ttf', 'UTF-8'))
+        page.setFont('Roboto', size=24)
+        page.drawString(140, 800, 'Список необходимых покупок')
+        page.setFont('Roboto', size=14)
         # height = 750
         # ingredients = IngredientQuantity.objects.filter(
         #     recipe__cart__user=request.user).values(
@@ -90,9 +90,9 @@ class RecipeViewSet(ModelViewSet):
         #         f'{ingredient["ingredient__measurement_unit"]}')
         #     )
         #     height -= 25
-        # page.showPage()
-        # page.save()
-        return HttpResponse('Hello')
+        page.showPage()
+        page.save()
+        return response
 
 
 class FavoriteApiView(APIView):
