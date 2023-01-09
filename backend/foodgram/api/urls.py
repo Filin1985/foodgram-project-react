@@ -22,7 +22,7 @@ urlpatterns = [
         FavoriteApiView.as_view(), name='favorites'
     ),
     path(
-        'recipes/shopping_cart/',
+        'recipes/download_shopping_cart/',
         CartListApiView.as_view(), name='cart'
     ),
 ]
