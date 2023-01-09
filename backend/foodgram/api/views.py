@@ -71,8 +71,8 @@ class RecipeViewSet(ModelViewSet):
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
         page = canvas.Canvas(response)
-        pdfmetrics.registerFont(
-            TTFont('Roboto', '../roboto.ttf', 'UTF-8'))
+        # pdfmetrics.registerFont(
+        #     TTFont('Roboto', '../roboto.ttf', 'UTF-8'))
         # page.setFont('Roboto', size=24)
         # page.drawString(140, 800, 'Список необходимых покупок')
         # page.setFont('Roboto', size=14)
