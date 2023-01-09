@@ -1,6 +1,7 @@
 from django.db.models import Sum
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.decorators import action
@@ -52,7 +53,7 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthOrReadOnly,)
     pagination_class = CustomPageNumberPagination
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend,)
     filter_class = CustomRecipeFilter
 
     def get_serializer_class(self):
