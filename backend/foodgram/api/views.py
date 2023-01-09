@@ -1,11 +1,7 @@
 from django.db.models import Sum
-from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -84,8 +80,9 @@ class RecipeViewSet(ModelViewSet):
             i_name = ingredient["ingredient__name"]
             i_unit = ingredient["ingredient__measurement_unit"]
             data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
+        result = '\n'.join(data)
         return Response(
-            '\n'.join(data),
+            result,
             status=status.HTTP_200_OK,
             content_type='text/plain'
         )
