@@ -32,7 +32,7 @@ class CustomRecipeFilter(filters.FilterSet):
         fields = ('tags', 'author')
 
 
-class IngredientFilter(dfilters.FilterSet):
+class IngredientFilter(filters.FilterSet):
     """Фильтр для ингредиентов"""
     name = filters.CharFilter(field_name="name", lookup_expr="icontains")
 
