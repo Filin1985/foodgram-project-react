@@ -70,7 +70,7 @@ class RecipeViewSet(ModelViewSet):
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; '
                                             'filename="shopping_list.pdf"')
-        # page = canvas.Canvas(response)
+        page = canvas.Canvas(response)
         # pdfmetrics.registerFont(
         #     TTFont('Roboto', '../../data/roboto.ttf', 'UTF-8'))
         # page.setFont('Roboto', size=24)
@@ -91,7 +91,7 @@ class RecipeViewSet(ModelViewSet):
         #     )
         #     height -= 25
         # page.showPage()
-        # page.save()
+        page.save()
         return HttpResponse('Hello')
 
 
