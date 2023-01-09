@@ -71,12 +71,12 @@ class RecipeViewSet(ModelViewSet):
         response['Content-Disposition'] = ('attachment; '
                                             'filename="shopping_list.pdf"')
         page = canvas.Canvas(response)
-        # pdfmetrics.registerFont(
-        #     TTFont('Roboto', '../../data/roboto.ttf', 'UTF-8'))
-        # page.setFont('Roboto', size=24)
-        # page.drawString(140, 800, 'Список необходимых покупок')
-        # page.setFont('Roboto', size=14)
-        # height = 750
+        pdfmetrics.registerFont(
+             TTFont('Roboto', '../../data/roboto.ttf', 'UTF-8'))
+        page.setFont('Roboto', size=24)
+        page.drawString(140, 800, 'Список необходимых покупок')
+        page.setFont('Roboto', size=14)
+        height = 750
         # ingredients = IngredientQuantity.objects.filter(
         #     recipe__cart__user=request.user).values(
         #     'ingredient__name', 'ingredient__measurement_unit'
@@ -92,7 +92,7 @@ class RecipeViewSet(ModelViewSet):
         #     height -= 25
         # page.showPage()
         page.save()
-        return HttpResponse('Hello')
+        return HttpResponse(response)
 
 
 class FavoriteApiView(APIView):
