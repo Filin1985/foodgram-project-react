@@ -73,7 +73,6 @@ class RecipeViewSet(ModelViewSet):
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-
         ingredients = IngredientQuantity.objects.filter(
             recipe__cart__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit'
@@ -83,15 +82,19 @@ class RecipeViewSet(ModelViewSet):
         data = []
         data.append('список покупок')
         data.append('ингридиент, ед. - количество')
-        for number, ingredient in enumerate(ingredients, 1):
-            i_name = ingredient["ingredient__name"]
-            i_unit = ingredient["ingredient__measurement_unit"]
-            data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
-        return Response(
-            '\n'.join(data),
-            status=status.HTTP_200_OK,
-            content_type='text/plain'
-        )
+        text = 'Список покупок:\n\n'
+        for _, ingredient in enumerate(ingredients, 1):
+            # i_name = ingredient["ingredient__name"]
+            # i_unit = ingredient["ingredient__measurement_unit"]
+            # data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
+            text += (
+                f'{ingredient["ingredient__name"]} ({ingredient["ingredient__measurement_unit"]})'
+                f' — {ingredient["qty"]}\n'
+            )
+        response = HttpResponse(text, content_type='text/plain')
+        filename = 'shopping_list.txt'
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
 
 
 class FavoriteApiView(APIView):
