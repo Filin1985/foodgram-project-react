@@ -4,6 +4,8 @@ from rest_framework.response import Response
 
 
 def post_favorite_cart(input_serializer, request, id):
+    print(id)
+    print(request['context'])
     serializer = input_serializer(data={
         'recipe': id,
         'user': request.user.id
