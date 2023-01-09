@@ -22,10 +22,10 @@ class CustomRecipeFilter(filters.FilterSet):
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
-    def get_is_in_shopping_cart(self, queryset, name, value):
-        if self.request.user.is_authenticated:
-            return queryset.filter(cart__user=self.request.user)
-        return queryset
+    # def get_is_in_shopping_cart(self, queryset, name, value):
+    #     if self.request.user.is_authenticated:
+    #         return queryset.filter(cart__user=self.request.user)
+    #     return queryset
 
     class Meta:
         model = Recipe
