@@ -16,7 +16,7 @@ class CustomRecipeFilter(filters.FilterSet):
     is_favorited = filters.BooleanFilter(method='get_is_favorited')
 
     def get_is_favorited(self, queryset, name, value):
-        if value and self.request.user.is_authenticated:
+        if self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
