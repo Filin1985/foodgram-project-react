@@ -74,22 +74,22 @@ class RecipeViewSet(ModelViewSet):
         # pdfmetrics.registerFont(
         #     TTFont('Roboto', '../roboto.ttf', 'UTF-8'))
         # page.setFont('Roboto', size=24)
-        # page.drawString(140, 800, 'Список необходимых покупок')
+        page.drawString(140, 800, 'Список необходимых покупок')
         # page.setFont('Roboto', size=14)
-        # height = 750
-        # ingredients = IngredientQuantity.objects.filter(
-        #     recipe__cart__user=request.user).values(
-        #     'ingredient__name', 'ingredient__measurement_unit'
-        # ).annotate(
-        #     qty=Sum('amount')
-        # ).order_by()
-        # for number, ingredient in enumerate(ingredients, 1):
-        #     page.drawString(75, height, (
-        #         f'{number}. {ingredient["ingredient__name"]} '
-        #         f'{ingredient["qty"]} '
-        #         f'{ingredient["ingredient__measurement_unit"]}')
-        #     )
-        #     height -= 25
+        height = 750
+        ingredients = IngredientQuantity.objects.filter(
+            recipe__cart__user=request.user).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(
+            qty=Sum('amount')
+        ).order_by()
+        for number, ingredient in enumerate(ingredients, 1):
+            page.drawString(75, height, (
+                f'{number}. {ingredient["ingredient__name"]} '
+                f'{ingredient["qty"]} '
+                f'{ingredient["ingredient__measurement_unit"]}')
+            )
+            height -= 25
         page.showPage()
         page.save()
         return HttpResponse(response)
