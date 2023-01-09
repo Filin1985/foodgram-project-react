@@ -1,9 +1,12 @@
 from django.db.models import Sum
 from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
+
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
@@ -67,33 +70,69 @@ class RecipeViewSet(ModelViewSet):
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        pdfmetrics.registerFont(
-            TTFont('Roboto', 'roboto.ttf'))
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = ('attachment; '
-                                           'filename="список_покупок.pdf"')
-        page = canvas.Canvas(response)
 
-        page.setFont('Roboto', size=24)
-        page.drawString(140, 800, 'Список необходимых покупок')
-        page.setFont('Roboto', size=14)
-        height = 750
         ingredients = IngredientQuantity.objects.filter(
             recipe__cart__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit'
         ).annotate(
             qty=Sum('amount')
         ).order_by()
+        data = []
+        data.append('список покупок')
+        data.append('ингридиент, ед. - количество')
         for number, ingredient in enumerate(ingredients, 1):
-            page.drawString(75, height, (
-                f'{number}. {ingredient["ingredient__name"]} '
-                f'{ingredient["qty"]} '
-                f'{ingredient["ingredient__measurement_unit"]}')
-            )
-            height -= 25
-        page.showPage()
-        page.save()
-        return HttpResponse(response)
+            i_name = ingredient["ingredient__name"]
+            i_unit = ingredient["ingredient__measurement_unit"]
+            data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
+        return Response(
+            '\n'.join(data), status=status.HTTP_200_OK, content_type='text/plain')
+        # pdfmetrics.registerFont(
+        #     TTFont('Roboto', 'roboto.ttf'))
+        # response = HttpResponse(content_type='application/pdf')
+        # response['Content-Disposition'] = ('attachment; '
+        #                                    'filename="список_покупок.pdf"')
+        # page = canvas.Canvas(response)
+
+        # page.setFont('Roboto', size=24)
+        # page.drawString(140, 800, 'Список необходимых покупок')
+        # page.setFont('Roboto', size=14)
+        # height = 750
+        # ingredients = IngredientQuantity.objects.filter(
+        #     recipe__cart__user=request.user).values(
+        #     'ingredient__name', 'ingredient__measurement_unit'
+        # ).annotate(
+        #     qty=Sum('amount')
+        # ).order_by()
+        # for number, ingredient in enumerate(ingredients, 1):
+        #     page.drawString(75, height, (
+        #         f'{number}. {ingredient["ingredient__name"]} '
+        #         f'{ingredient["qty"]} '
+        #         f'{ingredient["ingredient__measurement_unit"]}')
+        #     )
+        #     height -= 25
+        # page.showPage()
+        # page.save()
+        # return HttpResponse(response)
+
+#         recipes_id = request.user.cart_user.values_list('recipe__id')
+#         ingredients = RecipeIngredient.objects.filter(
+#              recipe__in=recipes_id
+#          ).values(
+#              'ingredient__name',
+#              'ingredient__measurement_unit'
+#          ).order_by('ingredient__name').annotate(sum_amount=Sum('amount'))
+#         data = []
+#         data.append('список покупок')
+#         data.append('ингридиент, ед. - количество')
+#         for i in ingredients:
+#              i_name = i.get('ingredient__name')
+#              i_unit = i.get('ingredient__measurement_unit')
+#              data.append(f'{i_name} ({i_unit}) - {i.get("sum_amount")}')
+#         return Response(
+#              '\n'.join(data),
+#              status=status.HTTP_200_OK,
+#              content_type='text/plain'
+#         )
 
 
 class FavoriteApiView(APIView):
