@@ -23,6 +23,6 @@ urlpatterns = [
     ),
     path(
         'recipes/download_shopping_cart/',
-        CartListApiView.as_view(), name='cart'
+        CartListApiView.as_view(), name='download_shopping_cart'
     ),
 ]
