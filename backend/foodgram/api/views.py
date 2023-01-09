@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .filters import CustomRecipeFilter
+from .filters import CustomRecipeFilter, IngredientFilter
 from .pagination import CustomPageNumberPagination
 from .permissions import IsAuthOrReadOnly
 from .serializers import (CartListSerializer, FavoriteSerializer,
@@ -47,6 +47,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
     serializer_class = IngredientSerializer
     pagination_class = None
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = IngredientFilter
 
 
 class RecipeViewSet(ModelViewSet):
@@ -56,8 +58,8 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthOrReadOnly,)
     pagination_class = CustomPageNumberPagination
-    filter_backends = (DjangoFilterBackend,)
-    filter_class = CustomRecipeFilter
+    # filter_backends = (DjangoFilterBackend,)
+    # filter_class = CustomRecipeFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
