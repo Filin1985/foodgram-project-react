@@ -84,9 +84,6 @@ class RecipeViewSet(ModelViewSet):
         data.append('ингридиент, ед. - количество')
         text = 'Список покупок:\n\n'
         for _, ingredient in enumerate(ingredients, 1):
-            # i_name = ingredient["ingredient__name"]
-            # i_unit = ingredient["ingredient__measurement_unit"]
-            # data.append(f'{number}. {i_name} ({i_unit}) - {ingredient["qty"]}')
             text += (
                 f'{ingredient["ingredient__name"]} ({ingredient["ingredient__measurement_unit"]})'
                 f' — {ingredient["qty"]}\n'
