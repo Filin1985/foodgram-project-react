@@ -111,4 +111,4 @@ sudo docker compose exec backend python manage.py collectstatic --no-input
 
 ### Actions badge
 
-![workflow bagde](https://github.com/Filin1985/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
+![workflow bagde](https://github.com/Filin1985/foodgram-project-react/actions/workflows/foodgram_workflow.yaml/badge.svg)
