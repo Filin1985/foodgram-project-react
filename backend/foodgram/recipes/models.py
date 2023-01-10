@@ -83,8 +83,11 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         'Ingredient', through='IngredientQuantity',
-        related_name='recipes', verbose_name='Ингредиенты'
-    )
+        related_name='recipes', verbose_name='Ингредиенты',
+        validators=(MinValueValidator(
+            1, message='Минимальное количество ингредиента - 1'),
+        ))
+
     cooking_time = models.IntegerField(
         verbose_name='Время приготовления',
         validators=(MinValueValidator(
