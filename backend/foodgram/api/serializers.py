@@ -128,13 +128,13 @@ class RecipeSerializer(serializers.ModelSerializer):
             ingredient_id = ingredient['id']
             if ingredient_id in ingredients_ids:
                 raise serializers.ValidationError({
-                    'ingredients': 'Ингредиент не должен повторяться!'
+                    'ingredients': 'Ингредиент не должен повторяться.'
                 })
             ingredients_ids.append(ingredient_id)
             amount = ingredient['amount']
             if int(amount) <= 0:
                 raise serializers.ValidationError({
-                    'amount': 'Количество ингредиента не должно быть меньше 0!'
+                    'amount': 'Количество ингредиента не должно быть меньше 0.'
                 })
         tags = data['tags']
         if not tags:
