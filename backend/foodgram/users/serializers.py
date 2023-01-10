@@ -69,6 +69,7 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = (
+            'id',
             'email', 'username',
             'last_name', 'first_name', 'is_subscribed',
             'recipes', 'recipes_count'
