@@ -67,7 +67,7 @@ class FollowSerializer(serializers.ModelSerializer):
     recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
 
     class Meta:
-        model = Follow
+        model = User
         fields = (
             'id',
             'email', 'username',

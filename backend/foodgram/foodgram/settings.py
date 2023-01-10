@@ -130,7 +130,7 @@ DJOSER = {
     'HIDE_USERS': False,
     'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {
-        # 'user': 'users.serializers.CustomUserSerializer',
+        'user': 'users.serializers.CustomUserSerializer',
         'user_create': 'users.serializers.CustomUserCreateSerializer',
         'current_user': 'users.serializers.CustomUserSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer'
