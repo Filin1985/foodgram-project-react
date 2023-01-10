@@ -79,7 +79,8 @@ class RecipeViewSet(ModelViewSet):
         text = 'Список покупок:\n\n'
         for _, ingredient in enumerate(ingredients, 1):
             text += (
-                f'{ingredient["ingredient__name"]} ({ingredient["ingredient__measurement_unit"]})'
+                f'{ingredient["ingredient__name"]} '
+                f'({ingredient["ingredient__measurement_unit"]})'
                 f' — {ingredient["qty"]}\n'
             )
         response = HttpResponse(text, content_type='text/plain')
